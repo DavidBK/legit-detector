@@ -1,12 +1,13 @@
 package server
 
 import (
+	"encoding/json"
 	"fmt"
-	"io"
 	"log"
 	"net/http"
 
 	"github.com/davidbk6/legit-detector/configs"
+	"github.com/davidbk6/legit-detector/github"
 )
 
 func CreateServer() {
@@ -33,29 +34,41 @@ func handleHealth(w http.ResponseWriter, _ *http.Request, _ *configs.Config) {
 	log.Printf("Sent health check response")
 }
 
-func handleWebhook(w http.ResponseWriter, r *http.Request, config *configs.Config) {
-	log.Printf("Received webhook request")
+func handleWebhook(w http.ResponseWriter, r *http.Request, _ *configs.Config) {
 	if r.Method != http.MethodPost {
-		w.WriteHeader(http.StatusMethodNotAllowed)
-		w.Write([]byte("Method not allowed"))
+		http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
 		return
 	}
 
-	if r.Header.Get("Content-Type") != "application/json" {
-		w.WriteHeader(http.StatusUnsupportedMediaType)
-		w.Write([]byte("Unsupported media type"))
-		return
-	}
-
-	body, err := io.ReadAll(r.Body)
+	event, err := github.ParseEvent(r)
 	if err != nil {
-		log.Printf("Error reading request body: %v", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("Internal server error"))
-		return
+		log.Printf("Failed to parse event: %v", err)
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 	}
 
-	fmt.Println(body)
+	eventType := event.EventType
+	log.Printf("Received %s event", eventType)
+
+	switch eventType {
+	case "push":
+		handlePushEvent(event.Payload)
+	case "pull_request":
+		handlePullRequestEvent(event.Payload)
+	default:
+		log.Printf("Unhandled event type: %s", eventType)
+	}
+
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("OK"))
+	json.NewEncoder(w).Encode(map[string]string{
+		"status": "success",
+		"event":  eventType,
+	})
+}
+
+func handlePushEvent(payload interface{}) {
+	log.Printf("Received push event: %v", payload)
+}
+
+func handlePullRequestEvent(payload interface{}) {
+	log.Printf("Received pull event: %v", payload)
 }
