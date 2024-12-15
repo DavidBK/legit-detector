@@ -8,6 +8,7 @@ import (
 
 	"github.com/davidbk6/legit-detector/configs"
 	"github.com/davidbk6/legit-detector/github"
+	"github.com/davidbk6/legit-detector/processor"
 )
 
 func CreateServer() {
@@ -49,26 +50,16 @@ func handleWebhook(w http.ResponseWriter, r *http.Request, _ *configs.Config) {
 	eventType := event.EventType
 	log.Printf("Received %s event", eventType)
 
-	switch eventType {
-	case "push":
-		handlePushEvent(event.Payload)
-	case "pull_request":
-		handlePullRequestEvent(event.Payload)
-	default:
-		log.Printf("Unhandled event type: %s", eventType)
-	}
+	go func() {
+		err := processor.HandleEvent(event)
+		if err != nil {
+			log.Printf("Failed to process event: %v", err)
+		}
+	}()
 
-	w.WriteHeader(http.StatusOK)
+	w.WriteHeader(http.StatusAccepted)
 	json.NewEncoder(w).Encode(map[string]string{
 		"status": "success",
 		"event":  eventType,
 	})
-}
-
-func handlePushEvent(payload interface{}) {
-	log.Printf("Received push event: %v", payload)
-}
-
-func handlePullRequestEvent(payload interface{}) {
-	log.Printf("Received pull event: %v", payload)
 }
