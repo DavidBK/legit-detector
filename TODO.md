@@ -1,0 +1,6 @@
+- Error wraps
+- Load env vars
+- Containerize the ngrok
+- Tests
+- Use structured logging
+- Unmarshal using library for example [json-iter](github.com/json-iterator/go)
