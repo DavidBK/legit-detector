@@ -6,17 +6,17 @@ import (
 	"github.com/davidbk6/legit-detector/github"
 )
 
-type RepositoryHandler struct{}
+type RepoLifeTimeRule struct{}
 
-func NewRepositoryHandler() *RepositoryHandler {
-	return &RepositoryHandler{}
+func NewRepoLifeTimeRule() *RepoLifeTimeRule {
+	return &RepoLifeTimeRule{}
 }
 
-func (h *RepositoryHandler) GetEventTypes() []string {
+func (h *RepoLifeTimeRule) GetEventTypes() []string {
 	return []string{"repository"}
 }
 
-func (h *RepositoryHandler) Handle(event *github.Event) {
+func (h *RepoLifeTimeRule) Handle(event *github.Event) {
 	p := event.Payload.(*github.RepositoryPayload)
 	repoName := p.Repository.Name
 

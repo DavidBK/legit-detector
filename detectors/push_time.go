@@ -7,17 +7,17 @@ import (
 	"github.com/davidbk6/legit-detector/github"
 )
 
-type PushHandler struct{}
+type PushTimeRule struct{}
 
-func NewPushHandler() *PushHandler {
-	return &PushHandler{}
+func NewPushTimeRule() *PushTimeRule {
+	return &PushTimeRule{}
 }
 
-func (h *PushHandler) GetEventTypes() []string {
+func (h *PushTimeRule) GetEventTypes() []string {
 	return []string{"push"}
 }
 
-func (h *PushHandler) Handle(event *github.Event) {
+func (h *PushTimeRule) Handle(event *github.Event) {
 	p := event.Payload.(*github.PushPayload)
 	pushedAt := p.Repository.PushedAt
 	pushDate := time.Unix(pushedAt, 0)

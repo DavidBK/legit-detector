@@ -6,17 +6,17 @@ import (
 	"github.com/davidbk6/legit-detector/github"
 )
 
-type TeamHandler struct{}
+type TeamNameRule struct{}
 
-func NewTeamHandler() *TeamHandler {
-	return &TeamHandler{}
+func NewTeamNameRule() *TeamNameRule {
+	return &TeamNameRule{}
 }
 
-func (h *TeamHandler) GetEventTypes() []string {
+func (h *TeamNameRule) GetEventTypes() []string {
 	return []string{"team"}
 }
 
-func (h *TeamHandler) Handle(event *github.Event) {
+func (h *TeamNameRule) Handle(event *github.Event) {
 	p := event.Payload.(*github.TeamPayload)
 	teamName := p.Team.Name
 

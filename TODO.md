@@ -1,3 +1,4 @@
+- Error handling
 - Error wraps
 - Get secret from secret manager (could be different secret per client)
 - Containerize the ngrok

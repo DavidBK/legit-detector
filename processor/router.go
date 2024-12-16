@@ -13,9 +13,9 @@ func init() {
 	dispatcher = NewEventDispatcher()
 
 	// Register handlers
-	dispatcher.Subscribe(detectors.NewPushHandler())
-	dispatcher.Subscribe(detectors.NewTeamHandler())
-	dispatcher.Subscribe(detectors.NewRepositoryHandler())
+	dispatcher.Subscribe(detectors.NewPushTimeRule())
+	dispatcher.Subscribe(detectors.NewTeamNameRule())
+	dispatcher.Subscribe(detectors.NewRepoLifeTimeRule())
 }
 
 func HandleEvent(event *github.Event) error {
