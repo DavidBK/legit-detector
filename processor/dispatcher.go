@@ -1,6 +1,8 @@
 package processor
 
 import (
+	"sync"
+
 	"github.com/davidbk6/legit-detector/github"
 )
 
@@ -27,8 +29,17 @@ func (d *EventDispatcher) Subscribe(subscriber EventSubscriber) {
 
 func (d *EventDispatcher) Dispatch(event *github.Event) {
 	if subscribers, exists := d.subscribers[event.EventType]; exists {
+		var wg sync.WaitGroup
+
 		for _, subscriber := range subscribers {
-			subscriber.Handle(event)
+			wg.Add(1)
+
+			go func(s EventSubscriber) {
+				defer wg.Done()
+				s.Handle(event)
+			}(subscriber)
 		}
+
+		wg.Wait()
 	}
 }

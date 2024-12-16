@@ -21,5 +21,6 @@ func init() {
 func HandleEvent(event *github.Event) error {
 	log.Printf("Processing %s event", event.EventType)
 	dispatcher.Dispatch(event)
+	log.Printf("Finished processing %s event", event.EventType)
 	return nil
 }
