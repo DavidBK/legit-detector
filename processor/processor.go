@@ -12,7 +12,6 @@ var dispatcher *EventDispatcher
 func init() {
 	dispatcher = NewEventDispatcher()
 
-	// Register handlers
 	dispatcher.Subscribe(detectors.NewPushTimeRule())
 	dispatcher.Subscribe(detectors.NewTeamNameRule())
 	dispatcher.Subscribe(detectors.NewRepoLifeTimeRule())

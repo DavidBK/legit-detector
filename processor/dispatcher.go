@@ -12,23 +12,23 @@ type EventSubscriber interface {
 }
 
 type EventDispatcher struct {
-	subscribers map[string][]EventSubscriber
+	Subscribers map[string][]EventSubscriber
 }
 
 func NewEventDispatcher() *EventDispatcher {
 	return &EventDispatcher{
-		subscribers: make(map[string][]EventSubscriber),
+		Subscribers: make(map[string][]EventSubscriber),
 	}
 }
 
 func (d *EventDispatcher) Subscribe(subscriber EventSubscriber) {
 	for _, eventType := range subscriber.GetEventTypes() {
-		d.subscribers[eventType] = append(d.subscribers[eventType], subscriber)
+		d.Subscribers[eventType] = append(d.Subscribers[eventType], subscriber)
 	}
 }
 
 func (d *EventDispatcher) Dispatch(event *github.Event) {
-	if subscribers, exists := d.subscribers[event.EventType]; exists {
+	if subscribers, exists := d.Subscribers[event.EventType]; exists {
 		var wg sync.WaitGroup
 
 		for _, subscriber := range subscribers {

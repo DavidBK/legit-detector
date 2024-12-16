@@ -2,6 +2,7 @@ package detectors
 
 import (
 	"log"
+	"strings"
 
 	"github.com/davidbk6/legit-detector/github"
 )
@@ -22,7 +23,7 @@ func (h *TeamNameRule) Handle(event *github.Event) {
 
 	log.Printf("Processing team event from %s", teamName)
 
-	if len(teamName) >= 5 && teamName[:5] != "hack__" {
+	if strings.HasPrefix(teamName, "hacker") {
 		log.Printf("Team is not legit")
 	} else {
 		log.Printf("Team is legit")
