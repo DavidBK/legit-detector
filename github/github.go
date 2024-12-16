@@ -5,7 +5,10 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"os"
 )
+
+const SECRET_NAME = "GITHUB_WEBHOOK_SECRET"
 
 type Event struct {
 	EventType string `json:"event_type"`
@@ -34,12 +37,27 @@ type RepositoryPayload struct {
 }
 
 func ParseEvent(r *http.Request) (*Event, error) {
+	signature := r.Header.Get("X-Hub-Signature-256")
+	body, err := io.ReadAll(r.Body)
+
+	if signature == "" {
+		return nil, fmt.Errorf("missing X-Hub-Signature-256 header")
+	}
+
+	webhookSecret := os.Getenv(SECRET_NAME)
+	if webhookSecret == "" {
+		return nil, fmt.Errorf("missing %s environment variable", SECRET_NAME)
+	}
+
+	if !isValidateSignature(body, "test", signature) {
+		return nil, fmt.Errorf("invalid signature")
+	}
+
 	eventType := r.Header.Get("X-GitHub-Event")
 	if eventType == "" {
 		return nil, fmt.Errorf("missing X-GitHub-Event header")
 	}
 
-	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read request body: %v", err)
 	}

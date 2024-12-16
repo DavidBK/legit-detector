@@ -6,13 +6,11 @@ type Config struct {
 }
 
 const (
-	DefaultPort     = 8080
-	DefaultLogLevel = "info"
+	DefaultPort = 8080
 )
 
 func NewConfig() *Config {
 	return &Config{
-		Port:     DefaultPort,
-		LogLevel: DefaultLogLevel,
+		Port: DefaultPort,
 	}
 }

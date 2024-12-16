@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/davidbk6/legit-detector/configs"
 	"github.com/davidbk6/legit-detector/github"
@@ -13,6 +14,12 @@ import (
 
 func CreateServer() {
 	config := configs.NewConfig()
+
+	// TODO: handle dinamic secret
+	if os.Getenv(github.SECRET_NAME) == "" {
+		panic(fmt.Sprintf("missing %s environment variable", github.SECRET_NAME))
+	}
+
 	http.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
 		handleHealth(w, r, config)
 	})
@@ -45,6 +52,7 @@ func handleWebhook(w http.ResponseWriter, r *http.Request, _ *configs.Config) {
 	if err != nil {
 		log.Printf("Failed to parse event: %v", err)
 		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return
 	}
 
 	eventType := event.EventType
