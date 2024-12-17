@@ -14,19 +14,30 @@ const (
 	EventTypeHeader = "X-GitHub-Event"
 )
 
+type EventType string
+
+const (
+	EventTypePush       EventType = "push"
+	EventTypeTeam       EventType = "team"
+	EventTypeRepository EventType = "repository"
+)
+
+func (e EventType) String() string {
+	return string(e)
+}
+
 type Event struct {
-	EventType string `json:"event_type"`
-	Payload   any    `json:"payload"`
+	EventType EventType `json:"event_type"`
+	Payload   any       `json:"payload"`
 }
 
 func ParseEvent(r *http.Request) (*Event, error) {
 	body, err := validateRequest(r)
-
 	if err != nil {
 		return nil, fmt.Errorf("failed to read request body: %v", err)
 	}
 
-	eventType := r.Header.Get(EventTypeHeader)
+	eventType := EventType(r.Header.Get(EventTypeHeader))
 	payload, err := parsePayload(eventType, body)
 	if err != nil {
 		return nil, err
@@ -65,17 +76,18 @@ func validateRequest(r *http.Request) ([]byte, error) {
 	return body, nil
 }
 
-func parsePayload(eventType string, body []byte) (any, error) {
+func parsePayload(eventType EventType, body []byte) (any, error) {
 	var payload any
 
 	switch eventType {
-	case "push":
+	case EventTypePush:
 		payload = &PushPayload{}
-	case "team":
+	case EventTypeTeam:
 		payload = &TeamPayload{}
-	case "repository":
+	case EventTypeRepository:
 		payload = &RepositoryPayload{}
 	default:
+		// For unknown event types, use a generic map
 		payload = &map[string]any{}
 	}
 

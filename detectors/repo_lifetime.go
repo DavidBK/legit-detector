@@ -29,8 +29,8 @@ func NewRepoLifeTimeRule(n notifications.Notifier) *RepoLifeTimeRule {
 	}
 }
 
-func (r *RepoLifeTimeRule) GetEventTypes() []string {
-	return []string{"repository"}
+func (r *RepoLifeTimeRule) GetEventTypes() []github.EventType {
+	return []github.EventType{github.EventTypeRepository}
 }
 
 func (r *RepoLifeTimeRule) Handle(event *github.Event) {

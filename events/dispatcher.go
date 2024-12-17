@@ -7,17 +7,17 @@ import (
 )
 
 type EventSubscriber interface {
-	GetEventTypes() []string
+	GetEventTypes() []github.EventType
 	Handle(*github.Event)
 }
 
 type EventDispatcher struct {
-	Subscribers map[string][]EventSubscriber
+	Subscribers map[github.EventType][]EventSubscriber
 }
 
 func NewEventDispatcher() *EventDispatcher {
 	return &EventDispatcher{
-		Subscribers: make(map[string][]EventSubscriber),
+		Subscribers: make(map[github.EventType][]EventSubscriber),
 	}
 }
 

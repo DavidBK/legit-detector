@@ -1,8 +1,7 @@
-  - fix server structure
-  - webhooks plural
   - events strings enums
   - const when possible
 
+- Make dispatcher a singleton?
 - Error handling
 - Error wraps
 - Add cleanup function to repo lifetime

@@ -19,8 +19,8 @@ func NewTeamNameRule(n notifications.Notifier) *TeamNameRule {
 	}
 }
 
-func (t *TeamNameRule) GetEventTypes() []string {
-	return []string{"team"}
+func (t *TeamNameRule) GetEventTypes() []github.EventType {
+	return []github.EventType{github.EventTypeTeam}
 }
 
 func (t *TeamNameRule) Handle(event *github.Event) {

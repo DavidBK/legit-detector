@@ -34,7 +34,6 @@ func (s *Server) handleWebhook(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusAccepted)
 	json.NewEncoder(w).Encode(map[string]string{
 		"status": "success",
-		"event":  eventType,
 	})
 }
 

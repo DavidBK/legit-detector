@@ -18,8 +18,8 @@ func NewPushTimeRule(n notifications.Notifier) *PushTimeRule {
 	}
 }
 
-func (h *PushTimeRule) GetEventTypes() []string {
-	return []string{"push"}
+func (h *PushTimeRule) GetEventTypes() []github.EventType {
+	return []github.EventType{github.EventTypePush}
 }
 
 func (h *PushTimeRule) Handle(event *github.Event) {
