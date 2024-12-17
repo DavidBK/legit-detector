@@ -1,6 +1,6 @@
 - Error handling
 - Error wraps
-- Get secret from secret manager (could be different secret per client)
+- Get secret from secret manager (could be different secrets per client)
 - Containerize the ngrok
 - Tests
 - Use structured logging

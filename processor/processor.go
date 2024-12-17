@@ -15,6 +15,7 @@ func init() {
 	dispatcher.Subscribe(detectors.NewPushTimeRule())
 	dispatcher.Subscribe(detectors.NewTeamNameRule())
 	dispatcher.Subscribe(detectors.NewRepoLifeTimeRule())
+	dispatcher.Subscribe(detectors.NewPing())
 }
 
 func HandleEvent(event *github.Event) error {

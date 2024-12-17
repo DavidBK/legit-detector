@@ -97,7 +97,7 @@ func parsePayload(eventType string, body []byte) (any, error) {
 	case "repository":
 		payload = &RepositoryPayload{}
 	default:
-		payload = &map[string]interface{}{}
+		payload = &map[string]any{}
 	}
 
 	if err := json.Unmarshal(body, payload); err != nil {
