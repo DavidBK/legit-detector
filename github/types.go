@@ -30,16 +30,31 @@ type PushPayload struct {
 
 type TeamPayload struct {
 	Action string `json:"action"`
-	Team   struct {
+	Scope  string `json:"scope"`
+	Member struct {
+		Login string `json:"login"`
+		ID    int64  `json:"id"`
+	} `json:"member"`
+	Team struct {
 		Name string `json:"name"`
+		ID   int64  `json:"id"`
+		Slug string `json:"slug"`
 	} `json:"team"`
+	Organization struct {
+		Login string `json:"login"`
+		ID    int64  `json:"id"`
+	} `json:"organization"`
+	Sender struct {
+		Login string `json:"login"`
+		ID    int64  `json:"id"`
+	} `json:"sender"`
 }
 
 type RepositoryPayload struct {
 	Action     string `json:"action"`
 	Repository struct {
 		Name      string    `json:"name"`
-		Id        int       `json:"id"`
+		ID        int       `json:"id"`
 		CreatedAt time.Time `json:"created_at"`
 		UpdatedAt time.Time `json:"updated_at"`
 	} `json:"repository"`

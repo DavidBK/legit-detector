@@ -22,6 +22,7 @@ func (h *TeamNameRule) Handle(event *github.Event) {
 	teamName := p.Team.Name
 
 	log.Printf("Processing team event from %s", teamName)
+	log.Printf("Organization: %s", p.Organization.Login)
 
 	if strings.HasPrefix(teamName, "hacker") {
 		log.Printf("Team is not legit")

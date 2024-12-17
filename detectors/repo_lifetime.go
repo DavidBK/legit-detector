@@ -31,7 +31,7 @@ func (h *RepoLifeTimeRule) GetEventTypes() []string {
 
 func (h *RepoLifeTimeRule) Handle(event *github.Event) {
 	p := event.Payload.(*github.RepositoryPayload)
-	repoID := p.Repository.Id
+	repoID := p.Repository.ID
 	repoName := p.Repository.Name
 	creationTime := p.Repository.CreatedAt
 
