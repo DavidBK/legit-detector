@@ -9,17 +9,21 @@ import (
 	"github.com/davidbk6/legit-detector/notifications"
 )
 
-type TeamNameRule struct{}
-
-func NewTeamNameRule() *TeamNameRule {
-	return &TeamNameRule{}
+type TeamNameRule struct {
+	notifer notifications.Notifier
 }
 
-func (h *TeamNameRule) GetEventTypes() []string {
+func NewTeamNameRule(n notifications.Notifier) *TeamNameRule {
+	return &TeamNameRule{
+		notifer: n,
+	}
+}
+
+func (t *TeamNameRule) GetEventTypes() []string {
 	return []string{"team"}
 }
 
-func (h *TeamNameRule) Handle(event *github.Event) {
+func (t *TeamNameRule) Handle(event *github.Event) {
 	p := event.Payload.(*github.TeamPayload)
 	teamName := p.Team.Name
 
@@ -33,6 +37,6 @@ func (h *TeamNameRule) Handle(event *github.Event) {
 			Timestamp:    time.Now(),
 		}
 
-		notifications.GetManager().NotifyAll(notification)
+		t.notifer.Notify(notification)
 	}
 }

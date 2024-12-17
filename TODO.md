@@ -1,6 +1,7 @@
   - fix server structure
   - webhooks plural
   - events strings enums
+  - const when possible
 
 - Error handling
 - Error wraps

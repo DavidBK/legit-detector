@@ -5,7 +5,7 @@ import (
 
 	"github.com/davidbk6/legit-detector/configs"
 	"github.com/davidbk6/legit-detector/detectors"
-	"github.com/davidbk6/legit-detector/event"
+	"github.com/davidbk6/legit-detector/events"
 	"github.com/davidbk6/legit-detector/notifications"
 	"github.com/davidbk6/legit-detector/server"
 	"github.com/joho/godotenv"
@@ -14,9 +14,11 @@ import (
 func main() {
 	godotenv.Load()
 
-	createNotifiers()
-	eventDispatcher := event.NewEventDispatcher()
-	registerRules(eventDispatcher)
+	notifer := notifications.NewNotificationManager()
+	createNotifiers(notifer)
+
+	eventDispatcher := events.NewEventDispatcher()
+	registerRules(eventDispatcher, notifer)
 
 	config := configs.NewConfig()
 
@@ -27,13 +29,12 @@ func main() {
 	}
 }
 
-func createNotifiers() {
-	notificationManager := notifications.GetManager()
-	notificationManager.AddNotifier(notifications.NewLogNotifier())
+func createNotifiers(n *notifications.NotificationManager) {
+	n.AddNotifier(notifications.NewLogNotifier())
 }
 
-func registerRules(ed *event.EventDispatcher) {
-	ed.Subscribe(detectors.NewPushTimeRule())
-	ed.Subscribe(detectors.NewTeamNameRule())
-	ed.Subscribe(detectors.NewRepoLifeTimeRule())
+func registerRules(ed *events.EventDispatcher, n *notifications.NotificationManager) {
+	ed.Subscribe(detectors.NewPushTimeRule(n))
+	ed.Subscribe(detectors.NewTeamNameRule(n))
+	ed.Subscribe(detectors.NewRepoLifeTimeRule(n))
 }

@@ -8,10 +8,14 @@ import (
 	"github.com/davidbk6/legit-detector/notifications"
 )
 
-type PushTimeRule struct{}
+type PushTimeRule struct {
+	notifer notifications.Notifier
+}
 
-func NewPushTimeRule() *PushTimeRule {
-	return &PushTimeRule{}
+func NewPushTimeRule(n notifications.Notifier) *PushTimeRule {
+	return &PushTimeRule{
+		notifer: n,
+	}
 }
 
 func (h *PushTimeRule) GetEventTypes() []string {
@@ -36,6 +40,6 @@ func (h *PushTimeRule) Handle(event *github.Event) {
 			Timestamp:    pushDate,
 		}
 
-		notifications.GetManager().NotifyAll(notification)
+		h.notifer.Notify(notification)
 	}
 }

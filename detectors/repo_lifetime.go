@@ -18,20 +18,22 @@ type RepoLifeTimeRule struct {
 	mu                sync.RWMutex
 	repoCreationTimes map[int]time.Time
 	minimumLifetime   time.Duration
+	notifer           notifications.Notifier
 }
 
-func NewRepoLifeTimeRule() *RepoLifeTimeRule {
+func NewRepoLifeTimeRule(n notifications.Notifier) *RepoLifeTimeRule {
 	return &RepoLifeTimeRule{
 		repoCreationTimes: make(map[int]time.Time),
 		minimumLifetime:   lifetimeThreshold,
+		notifer:           n,
 	}
 }
 
-func (h *RepoLifeTimeRule) GetEventTypes() []string {
+func (r *RepoLifeTimeRule) GetEventTypes() []string {
 	return []string{"repository"}
 }
 
-func (h *RepoLifeTimeRule) Handle(event *github.Event) {
+func (r *RepoLifeTimeRule) Handle(event *github.Event) {
 	p := event.Payload.(*github.RepositoryPayload)
 	repoID := p.Repository.ID
 	repoName := p.Repository.Name
@@ -39,24 +41,24 @@ func (h *RepoLifeTimeRule) Handle(event *github.Event) {
 
 	switch p.Action {
 	case "created":
-		h.mu.Lock()
-		h.repoCreationTimes[repoID] = creationTime
-		h.mu.Unlock()
+		r.mu.Lock()
+		r.repoCreationTimes[repoID] = creationTime
+		r.mu.Unlock()
 		log.Printf("Repository %s created and tracked", repoName)
 
 	case "deleted":
-		h.mu.Lock()
-		creationTime, exists := h.repoCreationTimes[repoID]
+		r.mu.Lock()
+		creationTime, exists := r.repoCreationTimes[repoID]
 		if exists {
-			delete(h.repoCreationTimes, repoID)
+			delete(r.repoCreationTimes, repoID)
 		}
-		h.mu.Unlock()
+		r.mu.Unlock()
 
 		if exists {
 			deleteTime := p.Repository.UpdatedAt
 			lifetime := deleteTime.Sub(creationTime)
 
-			if lifetime < h.minimumLifetime {
+			if lifetime < r.minimumLifetime {
 
 				repo := p.Repository.Name
 				sender := p.Sender.Login
@@ -69,7 +71,7 @@ func (h *RepoLifeTimeRule) Handle(event *github.Event) {
 					Timestamp:    deleteTime,
 				}
 
-				notifications.GetManager().NotifyAll(notification)
+				r.notifer.Notify(notification)
 			}
 		} else {
 			log.Printf("Repository %s deletion detected but creation time unknown", repoName)

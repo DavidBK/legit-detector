@@ -21,25 +21,15 @@ type NotificationManager struct {
 	notifiers []Notifier
 }
 
-var (
-	manager *NotificationManager
-	once    sync.Once
-)
-
-func GetManager() *NotificationManager {
-	once.Do(func() {
-		manager = &NotificationManager{
-			notifiers: make([]Notifier, 0),
-		}
-	})
-	return manager
+func NewNotificationManager() *NotificationManager {
+	return &NotificationManager{}
 }
 
 func (m *NotificationManager) AddNotifier(notifier Notifier) {
 	m.notifiers = append(m.notifiers, notifier)
 }
 
-func (m *NotificationManager) NotifyAll(notification Notification) {
+func (m *NotificationManager) Notify(notification Notification) {
 	wg := sync.WaitGroup{}
 	for _, notifier := range m.notifiers {
 		wg.Add(1)
