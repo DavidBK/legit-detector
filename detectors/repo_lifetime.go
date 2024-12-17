@@ -36,6 +36,7 @@ func (h *RepoLifeTimeRule) Handle(event *github.Event) {
 	creationTime := p.Repository.CreatedAt
 
 	log.Printf("Processing repository event from %s (ID: %d)", repoName, repoID)
+	log.Printf("Organization: %s", p.Organization.Login)
 
 	switch p.Action {
 	case "created":

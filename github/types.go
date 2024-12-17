@@ -53,9 +53,23 @@ type TeamPayload struct {
 type RepositoryPayload struct {
 	Action     string `json:"action"`
 	Repository struct {
-		Name      string    `json:"name"`
-		ID        int       `json:"id"`
-		CreatedAt time.Time `json:"created_at"`
-		UpdatedAt time.Time `json:"updated_at"`
+		ID         int       `json:"id"`
+		Name       string    `json:"name"`
+		CreatedAt  time.Time `json:"created_at"`
+		UpdatedAt  time.Time `json:"updated_at"`
+		PushedAt   time.Time `json:"pushed_at"`
+		Visibility string    `json:"visibility"`
+		Owner      struct {
+			Login string `json:"login"`
+			ID    int    `json:"id"`
+		} `json:"owner"`
 	} `json:"repository"`
+	Organization struct {
+		Login string `json:"login"`
+		ID    int    `json:"id"`
+	} `json:"organization"`
+	Sender struct {
+		Login string `json:"login"`
+		ID    int    `json:"id"`
+	} `json:"sender"`
 }
