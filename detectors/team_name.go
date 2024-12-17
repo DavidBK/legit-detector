@@ -23,6 +23,8 @@ func (t *TeamNameRule) GetEventTypes() []github.EventType {
 	return []github.EventType{github.EventTypeTeam}
 }
 
+const teamTitle = "Team Name"
+
 func (t *TeamNameRule) Handle(event *github.Event) {
 	p := event.Payload.(*github.TeamPayload)
 	teamName := p.Team.Name
@@ -32,7 +34,7 @@ func (t *TeamNameRule) Handle(event *github.Event) {
 
 		notification := notifications.Notification{
 			Message:      message,
-			EventType:    "team",
+			Title:        teamTitle,
 			Organization: p.Organization.Login,
 			Timestamp:    time.Now(),
 		}

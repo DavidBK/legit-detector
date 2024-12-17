@@ -1,8 +1,7 @@
 package configs
 
 type Config struct {
-	Port     int
-	LogLevel string
+	Port int
 }
 
 const (

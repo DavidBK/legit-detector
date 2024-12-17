@@ -1,6 +1,4 @@
-  - events strings enums
-  - const when possible
-
+- const when possible
 - Make dispatcher a singleton?
 - Error handling
 - Error wraps

@@ -9,12 +9,12 @@ func NewLogNotifier() *LogNotifier {
 }
 
 const notificationFormat = "!!! ALERT !!!\n" +
-	"\tEvent: %s\n" +
+	"\tTitle: %s\n" +
 	"\tOrganization: %s\n" +
 	"\tTimestamp: %s\n" +
 	"\tMessage: %s\n" +
-	"!!!!!!!!!!!!!!!\n"
+	"!!!!!!!!!!!!!\n"
 
 func (n *LogNotifier) Notify(notification Notification) {
-	fmt.Printf(notificationFormat, notification.EventType, notification.Organization, notification.Timestamp, notification.Message)
+	fmt.Printf(notificationFormat, notification.Title, notification.Organization, notification.Timestamp, notification.Message)
 }

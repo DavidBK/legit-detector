@@ -7,7 +7,7 @@ import (
 
 type Notification struct {
 	Message      string
-	EventType    string
+	Title        string
 	Organization string
 	Timestamp    time.Time
 	Metadata     map[string]any

@@ -22,12 +22,19 @@ func (h *PushTimeRule) GetEventTypes() []github.EventType {
 	return []github.EventType{github.EventTypePush}
 }
 
+const (
+	startHour = 14
+	endHour   = 16
+)
+
+const pushTitle = "Push Time"
+
 func (h *PushTimeRule) Handle(event *github.Event) {
 	p := event.Payload.(*github.PushPayload)
 	pushedAt := p.Repository.PushedAt
 	pushDate := time.Unix(pushedAt, 0)
 
-	if pushDate.Hour() >= 14 && pushDate.Hour() <= 16 {
+	if pushDate.Hour() >= startHour && pushDate.Hour() <= endHour {
 		repo := p.Repository.Name
 		pusher := p.Pusher.Name
 
@@ -35,7 +42,7 @@ func (h *PushTimeRule) Handle(event *github.Event) {
 
 		notification := notifications.Notification{
 			Message:      message,
-			EventType:    "push",
+			Title:        pushTitle,
 			Organization: p.Organization.Login,
 			Timestamp:    pushDate,
 		}

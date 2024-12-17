@@ -11,9 +11,9 @@ import (
 )
 
 const lifetimeThreshold = 10 * time.Minute
+const repoLifeTimeTitle = "Repo Lifetime"
 
 // TODO: Add cleanup for old repo creation times
-
 type RepoLifeTimeRule struct {
 	mu                sync.RWMutex
 	repoCreationTimes map[int]time.Time
@@ -66,7 +66,7 @@ func (r *RepoLifeTimeRule) Handle(event *github.Event) {
 
 				notification := notifications.Notification{
 					Message:      message,
-					EventType:    "repository",
+					Title:        repoLifeTimeTitle,
 					Organization: p.Organization.Login,
 					Timestamp:    deleteTime,
 				}
