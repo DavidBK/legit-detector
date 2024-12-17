@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"time"
 )
 
 const (
@@ -35,8 +36,10 @@ type TeamPayload struct {
 type RepositoryPayload struct {
 	Action     string `json:"action"`
 	Repository struct {
-		Name string `json:"name"`
-		Id   int    `json:"id"`
+		Name      string    `json:"name"`
+		Id        int       `json:"id"`
+		CreatedAt time.Time `json:"created_at"`
+		UpdatedAt time.Time `json:"updated_at"`
 	} `json:"repository"`
 }
 
