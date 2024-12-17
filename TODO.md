@@ -1,11 +1,12 @@
-- const when possible
+- Add tests
+- Read Port from env
+- Make rules configurable
 - Make dispatcher a singleton?
 - Error handling
 - Error wraps
 - Add cleanup function to repo lifetime
 - Get secret from secret manager (could be different secrets per client)
 - Containerize the ngrok
-- Tests
 - Use structured logging
 - Unmarshal using library for example [json-iter](github.com/json-iterator/go)
 - Use [go sdk](https://github.com/octokit/go-sdk/) for github webhook api
