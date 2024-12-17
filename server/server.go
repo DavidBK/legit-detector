@@ -8,21 +8,30 @@ import (
 
 	"github.com/davidbk6/legit-detector/configs"
 	"github.com/davidbk6/legit-detector/github"
+	"github.com/davidbk6/legit-detector/processor"
 )
 
-func CreateServer() {
-	config := configs.NewConfig()
+type Server struct {
+	config    *configs.Config
+	processor *processor.Processor
+}
 
-	// TODO: handle dynamic secret
+func NewServer(processor *processor.Processor) *Server {
+	return &Server{
+		config:    configs.NewConfig(),
+		processor: processor,
+	}
+}
+
+func (s *Server) Start() error {
 	if os.Getenv(github.SECRET_NAME) == "" {
-		panic(fmt.Sprintf("missing %s environment variable", github.SECRET_NAME))
+		return fmt.Errorf("missing %s environment variable", github.SECRET_NAME)
 	}
 
-	http.HandleFunc("/health", handleHealth)
-	http.HandleFunc("/webhook", handleWebhook)
+	mux := http.NewServeMux()
+	mux.HandleFunc("/health", s.handleHealth)
+	mux.HandleFunc("/webhook", s.handleWebhook)
 
-	log.Printf("Starting server on port %d", config.Port)
-	if err := http.ListenAndServe(fmt.Sprintf(":%d", config.Port), nil); err != nil {
-		log.Fatalf("Server failed to start: %v", err)
-	}
+	log.Printf("Starting server on port %d", s.config.Port)
+	return http.ListenAndServe(fmt.Sprintf(":%d", s.config.Port), mux)
 }

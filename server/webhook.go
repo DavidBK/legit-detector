@@ -6,10 +6,9 @@ import (
 	"net/http"
 
 	"github.com/davidbk6/legit-detector/github"
-	"github.com/davidbk6/legit-detector/processor"
 )
 
-func handleWebhook(w http.ResponseWriter, r *http.Request) {
+func (s *Server) handleWebhook(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
 		return
@@ -26,7 +25,7 @@ func handleWebhook(w http.ResponseWriter, r *http.Request) {
 	log.Printf("Received %s event", eventType)
 
 	go func() {
-		err := processor.HandleEvent(event)
+		err := s.processor.HandleEvent(event)
 		if err != nil {
 			log.Printf("Failed to process event: %v", err)
 		}

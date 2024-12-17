@@ -3,23 +3,32 @@ package processor
 import (
 	"log"
 
-	"github.com/davidbk6/legit-detector/detectors"
 	"github.com/davidbk6/legit-detector/github"
+	"github.com/davidbk6/legit-detector/registry"
 )
 
-var dispatcher *EventDispatcher
-
-func init() {
-	dispatcher = NewEventDispatcher()
-
-	dispatcher.Subscribe(detectors.NewPushTimeRule())
-	dispatcher.Subscribe(detectors.NewTeamNameRule())
-	dispatcher.Subscribe(detectors.NewRepoLifeTimeRule())
+type Processor struct {
+	dispatcher *EventDispatcher
 }
 
-func HandleEvent(event *github.Event) error {
+func NewProcessor(registry *registry.Registry) *Processor {
+	dispatcher := NewEventDispatcher()
+
+	for _, subscriber := range registry.GetSubscribers() {
+		dispatcher.Subscribe(subscriber)
+	}
+
+	return &Processor{
+		dispatcher: dispatcher,
+	}
+}
+
+func (p *Processor) HandleEvent(event *github.Event) error {
 	log.Printf("Processing %s event", event.EventType)
-	dispatcher.Dispatch(event)
+	err := p.dispatcher.Dispatch(event)
+	if err != nil {
+		return err
+	}
 	log.Printf("Finished processing %s event", event.EventType)
 	return nil
 }

@@ -4,37 +4,33 @@ import (
 	"sync"
 
 	"github.com/davidbk6/legit-detector/github"
+	"github.com/davidbk6/legit-detector/registry"
 )
 
-type EventSubscriber interface {
-	GetEventTypes() []string
-	Handle(*github.Event)
-}
-
 type EventDispatcher struct {
-	Subscribers map[string][]EventSubscriber
+	Subscribers map[string][]registry.EventSubscriber
 }
 
 func NewEventDispatcher() *EventDispatcher {
 	return &EventDispatcher{
-		Subscribers: make(map[string][]EventSubscriber),
+		Subscribers: make(map[string][]registry.EventSubscriber),
 	}
 }
 
-func (d *EventDispatcher) Subscribe(subscriber EventSubscriber) {
+func (d *EventDispatcher) Subscribe(subscriber registry.EventSubscriber) {
 	for _, eventType := range subscriber.GetEventTypes() {
 		d.Subscribers[eventType] = append(d.Subscribers[eventType], subscriber)
 	}
 }
 
-func (d *EventDispatcher) Dispatch(event *github.Event) {
+func (d *EventDispatcher) Dispatch(event *github.Event) error {
 	if subscribers, exists := d.Subscribers[event.EventType]; exists {
 		var wg sync.WaitGroup
 
 		for _, subscriber := range subscribers {
 			wg.Add(1)
 
-			go func(s EventSubscriber) {
+			go func(s registry.EventSubscriber) {
 				defer wg.Done()
 				s.Handle(event)
 			}(subscriber)
@@ -42,4 +38,7 @@ func (d *EventDispatcher) Dispatch(event *github.Event) {
 
 		wg.Wait()
 	}
+
+	// TODO: Add error handling
+	return nil
 }
