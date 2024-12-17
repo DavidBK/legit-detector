@@ -1,11 +1,13 @@
 package detectors
 
 import (
+	"fmt"
 	"log"
 	"sync"
 	"time"
 
 	"github.com/davidbk6/legit-detector/github"
+	"github.com/davidbk6/legit-detector/notifications"
 )
 
 const lifetimeThreshold = 10 * time.Minute
@@ -35,9 +37,6 @@ func (h *RepoLifeTimeRule) Handle(event *github.Event) {
 	repoName := p.Repository.Name
 	creationTime := p.Repository.CreatedAt
 
-	log.Printf("Processing repository event from %s (ID: %d)", repoName, repoID)
-	log.Printf("Organization: %s", p.Organization.Login)
-
 	switch p.Action {
 	case "created":
 		h.mu.Lock()
@@ -58,12 +57,19 @@ func (h *RepoLifeTimeRule) Handle(event *github.Event) {
 			lifetime := deleteTime.Sub(creationTime)
 
 			if lifetime < h.minimumLifetime {
-				log.Printf("Repository %s is not legit: lived for only %v (less than %v)",
-					repoName, lifetime.Round(time.Second), h.minimumLifetime)
 
-			} else {
-				log.Printf("Repository %s is legit: lived for %v",
-					repoName, lifetime.Round(time.Second))
+				repo := p.Repository.Name
+				sender := p.Sender.Login
+				message := fmt.Sprintf("Suspiciously short lifetime of %s detected (%s), sender: %s", repo, lifetime, sender)
+
+				notification := notifications.Notification{
+					Message:      message,
+					EventType:    "repository",
+					Organization: p.Organization.Login,
+					Timestamp:    deleteTime,
+				}
+
+				notifications.GetManager().NotifyAll(notification)
 			}
 		} else {
 			log.Printf("Repository %s deletion detected but creation time unknown", repoName)

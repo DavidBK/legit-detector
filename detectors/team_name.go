@@ -1,10 +1,12 @@
 package detectors
 
 import (
-	"log"
+	"fmt"
 	"strings"
+	"time"
 
 	"github.com/davidbk6/legit-detector/github"
+	"github.com/davidbk6/legit-detector/notifications"
 )
 
 type TeamNameRule struct{}
@@ -21,12 +23,16 @@ func (h *TeamNameRule) Handle(event *github.Event) {
 	p := event.Payload.(*github.TeamPayload)
 	teamName := p.Team.Name
 
-	log.Printf("Processing team event from %s", teamName)
-	log.Printf("Organization: %s", p.Organization.Login)
-
 	if strings.HasPrefix(teamName, "hacker") {
-		log.Printf("Team is not legit")
-	} else {
-		log.Printf("Team is legit")
+		message := fmt.Sprintf("Suspicious team name detected: %s, %s by %s", teamName, p.Action, p.Sender.Login)
+
+		notification := notifications.Notification{
+			Message:      message,
+			EventType:    "team",
+			Organization: p.Organization.Login,
+			Timestamp:    time.Now(),
+		}
+
+		notifications.GetManager().NotifyAll(notification)
 	}
 }

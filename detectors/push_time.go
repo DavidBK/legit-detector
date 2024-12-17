@@ -1,10 +1,11 @@
 package detectors
 
 import (
-	"log"
+	"fmt"
 	"time"
 
 	"github.com/davidbk6/legit-detector/github"
+	"github.com/davidbk6/legit-detector/notifications"
 )
 
 type PushTimeRule struct{}
@@ -22,11 +23,19 @@ func (h *PushTimeRule) Handle(event *github.Event) {
 	pushedAt := p.Repository.PushedAt
 	pushDate := time.Unix(pushedAt, 0)
 
-	log.Printf("Processing push event from %s", pushDate)
-	log.Printf("Push organization: %s", p.Organization.Login)
 	if pushDate.Hour() >= 14 && pushDate.Hour() <= 16 {
-		log.Printf("Push is not legit")
-	} else {
-		log.Printf("Push is legit")
+		repo := p.Repository.Name
+		pusher := p.Pusher.Name
+
+		message := fmt.Sprintf("Suspicious push detected at %s by %s to %s", pushDate, pusher, repo)
+
+		notification := notifications.Notification{
+			Message:      message,
+			EventType:    "push",
+			Organization: p.Organization.Login,
+			Timestamp:    pushDate,
+		}
+
+		notifications.GetManager().NotifyAll(notification)
 	}
 }
