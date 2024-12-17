@@ -1,3 +1,7 @@
+  - fix server structure
+  - webhooks plural
+  - events strings enums
+
 - Error handling
 - Error wraps
 - Add cleanup function to repo lifetime

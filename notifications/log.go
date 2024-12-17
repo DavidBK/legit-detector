@@ -16,6 +16,5 @@ const notificationFormat = "!!! ALERT !!!\n" +
 	"!!!!!!!!!!!!!!!\n"
 
 func (n *LogNotifier) Notify(notification Notification) {
-	// log notification
 	fmt.Printf(notificationFormat, notification.EventType, notification.Organization, notification.Timestamp, notification.Message)
 }

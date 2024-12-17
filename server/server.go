@@ -7,19 +7,19 @@ import (
 	"os"
 
 	"github.com/davidbk6/legit-detector/configs"
+	"github.com/davidbk6/legit-detector/events"
 	"github.com/davidbk6/legit-detector/github"
-	"github.com/davidbk6/legit-detector/processor"
 )
 
 type Server struct {
-	config    *configs.Config
-	processor *processor.Processor
+	config          *configs.Config
+	eventDispatcher *events.EventDispatcher
 }
 
-func NewServer(processor *processor.Processor) *Server {
+func NewServer(c *configs.Config, ed *events.EventDispatcher) *Server {
 	return &Server{
-		config:    configs.NewConfig(),
-		processor: processor,
+		config:          c,
+		eventDispatcher: ed,
 	}
 }
 
@@ -29,7 +29,7 @@ func (s *Server) Start() error {
 	}
 
 	mux := http.NewServeMux()
-	mux.HandleFunc("/health", s.handleHealth)
+	mux.HandleFunc("/health", handleHealth)
 	mux.HandleFunc("/webhook", s.handleWebhook)
 
 	log.Printf("Starting server on port %d", s.config.Port)

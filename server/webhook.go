@@ -25,7 +25,7 @@ func (s *Server) handleWebhook(w http.ResponseWriter, r *http.Request) {
 	log.Printf("Received %s event", eventType)
 
 	go func() {
-		err := s.processor.HandleEvent(event)
+		err := s.handleEvent(event)
 		if err != nil {
 			log.Printf("Failed to process event: %v", err)
 		}
@@ -36,4 +36,14 @@ func (s *Server) handleWebhook(w http.ResponseWriter, r *http.Request) {
 		"status": "success",
 		"event":  eventType,
 	})
+}
+
+func (s *Server) handleEvent(event *github.Event) error {
+	log.Printf("Processing %s event", event.EventType)
+	err := s.eventDispatcher.Dispatch(event)
+	if err != nil {
+		return err
+	}
+	log.Printf("Finished processing %s event", event.EventType)
+	return nil
 }
