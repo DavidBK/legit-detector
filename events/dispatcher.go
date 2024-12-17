@@ -3,25 +3,23 @@ package events
 import (
 	"sync"
 
+	"github.com/davidbk6/legit-detector/detectors"
 	"github.com/davidbk6/legit-detector/github"
 )
 
-type EventSubscriber interface {
-	GetEventTypes() []github.EventType
-	Handle(*github.Event)
-}
+type Detector = detectors.Detector
 
 type EventDispatcher struct {
-	Subscribers map[github.EventType][]EventSubscriber
+	Subscribers map[github.EventType][]Detector
 }
 
 func NewEventDispatcher() *EventDispatcher {
 	return &EventDispatcher{
-		Subscribers: make(map[github.EventType][]EventSubscriber),
+		Subscribers: make(map[github.EventType][]Detector),
 	}
 }
 
-func (d *EventDispatcher) Subscribe(subscriber EventSubscriber) {
+func (d *EventDispatcher) Subscribe(subscriber Detector) {
 	for _, eventType := range subscriber.GetEventTypes() {
 		d.Subscribers[eventType] = append(d.Subscribers[eventType], subscriber)
 	}
@@ -34,7 +32,7 @@ func (d *EventDispatcher) Dispatch(event *github.Event) error {
 		for _, subscriber := range subscribers {
 			wg.Add(1)
 
-			go func(s EventSubscriber) {
+			go func(s Detector) {
 				defer wg.Done()
 				s.Handle(event)
 			}(subscriber)
