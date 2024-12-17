@@ -23,6 +23,7 @@ func (h *PushTimeRule) Handle(event *github.Event) {
 	pushDate := time.Unix(pushedAt, 0)
 
 	log.Printf("Processing push event from %s", pushDate)
+	log.Printf("Push organization: %s", p.Organization.Login)
 	if pushDate.Hour() >= 14 && pushDate.Hour() <= 16 {
 		log.Printf("Push is not legit")
 	} else {
