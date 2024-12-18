@@ -7,9 +7,11 @@ The application implements an extensible infrastructure for anomaly detection wi
 - Team creation with "hacker" prefix
 - Repository creation and deletion within 10 minutes
 
+This project is a learning exercise, created to explore and practice programming in Go.
+I had no prior experience with Go and used it as an opportunity to learn the language and its ecosystem while building something.
+
 ## Prerequisites
 
-- Go 1.19 or higher
 - GitHub Organization admin access
 - ngrok or similar tool for local webhook testing (optional)
 
@@ -74,7 +76,7 @@ To add a new notification method you need to implement the `Notifier` interface:
 
 ```go
 type Notifier interface {
-	Notify(event Event) error
+	Notify(notification Notification)
 }
 ```
 
